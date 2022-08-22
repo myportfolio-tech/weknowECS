@@ -12,18 +12,19 @@ phases:
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  822575900206.dkr.ecr.us-east-1.amazonaws.com
   build:
     commands:
-      - echo building images...
+      - echo building test-driven-users image...
       - >
         docker build \
           -f services/users/Dockerfile.prod \
           -t 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-users:prod \
           ./services/users
+      - echo building test-driven-client image...
       - >
         docker build \
-        -f services/client/Dockerfile.prod \
-        -t 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-client:prod \
-        --build-arg NODE_ENV=production --build-arg REACT_APP_API_SERVICE_URL=${REACT_APP_API_SERVICE_URL} \
-        ./services/client
+          -f services/client/Dockerfile.prod \
+          -t 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-client:prod \
+          --build-arg NODE_ENV=production --build-arg REACT_APP_API_SERVICE_URL=${REACT_APP_API_SERVICE_URL} \
+          ./services/client
   post_build:
     commands:
       - docker push 822575900206.dkr.ecr.us-west-1.amazonaws.com/test-driven-users:prod
