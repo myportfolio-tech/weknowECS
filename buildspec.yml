@@ -27,5 +27,5 @@ phases:
           ./services/client
   post_build:
     commands:
-      - docker push 822575900206.dkr.ecr.us-west-1.amazonaws.com/test-driven-users:prod
-      - docker push 822575900206.dkr.ecr.us-west-1.amazonaws.com/test-driven-client:prod
+      - docker push 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-users:prod
+      - docker push 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-client:prod
