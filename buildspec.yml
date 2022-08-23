@@ -10,9 +10,22 @@ phases:
     commands:
       - echo logging in to ecr...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  822575900206.dkr.ecr.us-east-1.amazonaws.com
+      - docker pull 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-users:prod || true
+      - docker pull 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-client:builder || true
+      - docker pull 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-client:prod || true
   build:
     commands:
       - echo building test-driven-users image...
+      - echo building and testing dev images...
+      - docker-compose up -d --build
+      - docker-compose exec -T api python -m pytest "src/tests" -p no:warnings --cov="src"
+      - docker-compose exec -T api flake8 src
+      - docker-compose exec -T api black src --check
+      - docker-compose exec -T api isort src --check-only
+      - docker-compose exec -T client npm run lint
+      - docker-compose exec -T client npm run prettier:check
+      - docker-compose exec -T client npm run prettier:write
+      - echo building prod images...
       - >
         docker build \
           -f services/users/Dockerfile.prod \
@@ -27,5 +40,7 @@ phases:
           ./services/client
   post_build:
     commands:
+      - echo pushing prod images to ecr...
       - docker push 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-users:prod
+      - docker push 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-client:builder
       - docker push 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-client:prod
