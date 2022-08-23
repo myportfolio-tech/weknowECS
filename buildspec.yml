@@ -34,6 +34,15 @@ phases:
       - echo building test-driven-client image...
       - >
         docker build \
+          --target builder \
+          --cache-from 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-client:builder \
+          -f services/client/Dockerfile.prod \
+          -t 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-client:builder \
+          --build-arg NODE_ENV=production \
+          --build-arg REACT_APP_API_SERVICE_URL=$REACT_APP_API_SERVICE_URL \
+          ./services/client
+      - >
+        docker build \
           -f services/client/Dockerfile.prod \
           -t 822575900206.dkr.ecr.us-east-1.amazonaws.com/test-driven-client:prod \
           --build-arg NODE_ENV=production --build-arg REACT_APP_API_SERVICE_URL=${REACT_APP_API_SERVICE_URL} \
